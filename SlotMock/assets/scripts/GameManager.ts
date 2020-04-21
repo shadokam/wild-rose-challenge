@@ -4,13 +4,6 @@ const { ccclass, property } = cc._decorator;
 export default class GameManager extends cc.Component {
   @property(cc.Node)
   machine = null;
-  @property(cc.Node)
-  effectLine1 = null;
-  @property(cc.Node)
-  effectLine2 = null;
-  @property(cc.Node)
-  effectLine3 = null;
-  
 
   @property({ type: cc.AudioClip })
   audioClick = null;
@@ -76,7 +69,6 @@ export default class GameManager extends cc.Component {
         // Odds processing ----
         if (this.oddRatio < 50) {
           console.log("Odd rate equals " + this.oddRatio);
-          this.oddBetween10();
         }
 
         if (this.oddRatio > 50 && this.oddRatio <= 83) {
@@ -102,7 +94,7 @@ export default class GameManager extends cc.Component {
   /**
    * Sets the 33% chance tiles
    */
-  oddBetween33(): boolean {
+  oddBetween33(): void {
     this.firstRow = 100;
     this.thirdRow = 100;
     this.resultMatrix = [
@@ -115,12 +107,13 @@ export default class GameManager extends cc.Component {
       // Iterate rows and cols checking for the spots to fill with the tile.
     for (var row = 0; row < 5; row++) {
       for(var col = 0; col < 5; col++) {
+        var auxRandom = Math.floor(Math.random() * 30);
         var columnCheck = (col == 1 && row == 0) || (col == 1 && row == 2) || (col == 1 && row == 4);
         var columnCheck3 = (col == 3 && row == 1) || (col == 3 && row == 3);
 
-        if (columnCheck || columnCheck3)
+        if (columnCheck || columnCheck3) {
           this.resultMatrix[row][col] = this.secondRow;
-          this.effectLine2.active = true;
+        }
       }
     }
      /* Output
@@ -132,13 +125,12 @@ export default class GameManager extends cc.Component {
       [fill, this.gameWinning, fill, fill, fill]  
     ]
     */
-   return true;
   }
 
   /**
    * Sets the 10% chance tiles
    */
-  oddBetween10(): boolean {
+  oddBetween10(): void {
     this.firstRow = 100
     this.resultMatrix = [
       [1,2,3,4,5],
@@ -155,13 +147,13 @@ export default class GameManager extends cc.Component {
         var columnCheck3 = (col == 3 && row == 1) || (col == 3 && row == 3);
         var columnCheck4 = (col == 4 && row == 1) || (col == 4 && row == 3);
 
-        if (columnCheck || columnCheck3)
+        if (columnCheck || columnCheck3) {
           this.resultMatrix[row][col] = this.secondRow;
-          this.effectLine2.active = true;
+        }
 
-        if (columnCheck2 || columnCheck4)
+        if (columnCheck2 || columnCheck4) {
           this.resultMatrix[row][col] = this.thirdRow;
-          this.effectLine3.active = true;
+        }
       }
     }
     /* Output
@@ -173,10 +165,9 @@ export default class GameManager extends cc.Component {
       [fill, this.gameWinning, this.gameWinning, fill, fill]  
     ]
     */
-   return true;
   }
 
-  oddBetween7(): boolean {
+  oddBetween7(): void {
     this.resultMatrix = [
       [this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning],
       [this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning],
@@ -184,10 +175,6 @@ export default class GameManager extends cc.Component {
       [this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning],
       [this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning, this.gameWinning]  
     ]
-        this.effectLine1.active = true;
-        this.effectLine2.active = true;
-        this.effectLine3.active = true;
-        return true;
   }
 
 
@@ -195,8 +182,5 @@ export default class GameManager extends cc.Component {
   informStop(): void {
     const resultRelayed = this.result;
     this.machine.getComponent('Machine').stop(resultRelayed);
-    this.effectLine1.active = false;
-    this.effectLine2.active = false;
-    this.effectLine3.active = false;
   }
 }
