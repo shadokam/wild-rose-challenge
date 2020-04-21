@@ -6,6 +6,14 @@ const { ccclass, property } = cc._decorator;
 export default class Machine extends cc.Component {
   @property(cc.Node)
   public button: cc.Node = null;
+  @property(cc.Node)
+  public gameManager = null;
+  @property(cc.Node)
+  effectLine1 = null;
+  @property(cc.Node)
+  effectLine2 = null;
+  @property(cc.Node)
+  effectLine3 = null;
 
   @property(cc.Prefab)
   public _reelPrefab = null;
@@ -22,6 +30,10 @@ export default class Machine extends cc.Component {
     if (newPrefab !== null) {
       this.createMachine();
     }
+  }
+
+  start(): void {
+    this.gameManager.getComponent('GameManager');
   }
 
   @property({ type: cc.Integer })
@@ -44,6 +56,7 @@ export default class Machine extends cc.Component {
 
   public spinning = false;
 
+
   createMachine(): void {
     this.node.destroyAllChildren();
     this.reels = [];
@@ -62,7 +75,11 @@ export default class Machine extends cc.Component {
     this.node.getComponent(cc.Widget).updateAlignment();
   }
 
+  // Start input
   spin(): void {
+    this.effectLine1.active = false;
+    this.effectLine2.active = false;
+    this.effectLine3.active = false;
     this.spinning = true;
     this.button.getChildByName('Label').getComponent(cc.Label).string = 'STOP';
 
@@ -79,12 +96,27 @@ export default class Machine extends cc.Component {
     }
   }
 
+  // Btn verification
   lock(): void {
     this.button.getComponent(cc.Button).interactable = false;
   }
 
+
+  // Stop input
   stop(result: Array<Array<number>> = null): void {
     setTimeout(() => {
+      if (this.gameManager.getComponent('GameManager').oddRatio > 50 && this.gameManager.getComponent('GameManager').oddRatio <= 83) {
+        this.effectLine2.active = true;
+      }
+      if (this.gameManager.getComponent('GameManager').oddRatio > 83 && this.gameManager.getComponent('GameManager').oddRatio <= 93) {
+        this.effectLine2.active = true;
+        this.effectLine3.active = true;
+      }
+      if (this.gameManager.getComponent('GameManager').oddRatio > 93) {
+        this.effectLine1.active = true;
+        this.effectLine2.active = true;
+        this.effectLine3.active = true;
+      }
       this.spinning = false;
       this.button.getComponent(cc.Button).interactable = true;
       this.button.getChildByName('Label').getComponent(cc.Label).string = 'SPIN';
